@@ -1,6 +1,6 @@
 code = 0
 
-num_lines = sum(1 for _ in open("../puzzle-1b/input.txt"))
+num_lines = sum(1 for _ in open("input.txt"))
 
 # initialize dial
 dial = 1000*num_lines+50
