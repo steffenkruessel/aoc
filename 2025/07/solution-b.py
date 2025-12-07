@@ -1,5 +1,6 @@
+from array import array
 
-with open("test-input.txt", "r") as file:
+with open("input.txt", "r") as file:
     manifold = []
     for line in file:
         manifold_row = []
@@ -9,6 +10,9 @@ with open("test-input.txt", "r") as file:
             else:
                 manifold_row.append(character)
         manifold.append(manifold_row)
+
+    #for item in manifold:
+    #    print(item)
     
     # replace start with a tachyon
     print(manifold)
@@ -30,18 +34,37 @@ with open("test-input.txt", "r") as file:
                     timelines_new_right = 0
                     if manifold[row_index + 1][char_index + 1] != ".":
                         timelines_new_right += int(manifold[row_index + 1][char_index + 1])
-                    manifold[row_index + 1] = (manifold[row_index + 1][:char_index - 1] + 
-                        list((str(timelines_old+timelines_new_left) + "^" + str(timelines_old+timelines_new_right))) +
-                        manifold[row_index + 1][char_index + 2:])
+
+                    #print("left", ''.join(str(timelines_old+timelines_new_left)), "right", str(timelines_old+timelines_new_right))
+                    #manifold[row_index + 1] = (manifold[row_index + 1][:char_index - 1] +
+                    #       list((str(timelines_old + timelines_new_left) + "^" + str(timelines_old + timelines_new_right))) +
+                    #       manifold[row_index + 1][char_index + 2:])
+                    #print("start:", manifold[row_index + 1])
+                    manifold_tmp = manifold[row_index+1][:char_index-1]
+                    manifold_tmp.append(str(timelines_old + timelines_new_left))
+                    manifold_tmp.append("^")
+                    manifold_tmp.append(str(timelines_old + timelines_new_right))
+                    manifold_tmp += manifold[row_index + 1][char_index + 2:]
+                    manifold[row_index + 1] = manifold_tmp
+                    #print("stopp:", manifold[row_index + 1])
                 else:
+                    #print("new-line", manifold[row_index+1])
                     timelines_new_middle = 0
-                    if manifold[row_index + 1][char_index + 1] != ".":
+                    if manifold[row_index + 1][char_index] != ".":
                         timelines_new_middle += int(manifold[row_index + 1][char_index])
-                    manifold[row_index + 1] = (manifold[row_index + 1][:char_index] + 
-                        list(str(timelines_old+timelines_new_middle)) + 
-                        manifold[row_index + 1][char_index + 1:])
+                    #print("will do", manifold[row_index + 1][:char_index], manifold[row_index + 1][char_index + 1:])
+
+                    manifold_tmp = list()
+                    manifold_tmp += manifold[row_index + 1][:char_index]
+                    manifold_tmp.append(str(timelines_old+timelines_new_middle))
+                    #print(timelines_old, timelines_new_middle, str(timelines_old+timelines_new_middle))
+                    manifold_tmp += manifold[row_index + 1][char_index + 1:]
+                    manifold[row_index + 1] = manifold_tmp
             
-            print(manifold[row_index])
+        print(manifold[row_index])
+        #print("row")
+        #print(manifold[row_index+1])
+        #print("done")
             
     print(manifold)
     
