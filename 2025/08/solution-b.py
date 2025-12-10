@@ -37,11 +37,11 @@ for distance_tuple in sorted(box_distances, key=lambda x: x[0]):
             if distance_tuple[1][0] == circuit:
                 circuit_a = circuit_index
                 last_circuit_a = distance_tuple[1][0]
-                print("Distance A:", last_circuit_a)
+                #print("Distance A:", last_circuit_a)
             if distance_tuple[1][1] == circuit:
                 circuit_b = circuit_index
                 last_circuit_b = distance_tuple[1][1]
-                print("Distance B:", last_circuit_b)
+                #print("Distance B:", last_circuit_b)
 
     if circuit_a != circuit_b:
         circuits[circuit_a] += circuits[circuit_b]
