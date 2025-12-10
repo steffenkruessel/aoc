@@ -1,3 +1,4 @@
+import numpy as np
 
 class FactoryMachine:
     def __init__(self, indicator_targets, button_wirings, joltage_targets):
@@ -31,7 +32,7 @@ class FactoryMachine:
         print("Button Wirings read:", self.button_wirings)
 
         # read the button wiring, but interprete value as decimal
-        self.wiring_joltages = []
+        wiring_joltages = []
         for button_wiring in button_wirings:
             button_wiring_split = button_wiring.split(",")
             button_joltage = []
@@ -41,15 +42,17 @@ class FactoryMachine:
                 else:
                     button_joltage.append(0)
             #print("Button", button_joltage)
-            self.wiring_joltages.append(button_joltage)
+            wiring_joltages.append(button_joltage)
             #print("Button Wiring:", buttons)
-        print("Button Joltages read:", self.wiring_joltages)
+        self.wiring_joltages = np.array(wiring_joltages)
+        print("Button Joltages read:\n", self.wiring_joltages)
 
         # read the joltages
-        self.joltages = []
+        joltages = []
         for joltage in joltage_targets.split(",")[::-1]:
-            self.joltages.append(int(joltage))
-        print("Joltages read:", self.joltages)
+            joltages.append(int(joltage))
+        self.joltages = np.array([joltages])
+        print("Joltages read:", joltages, self.joltages)
 
         # define the starting condition of this machine (all lights turned off)
         self.indicator_lights = int("0b0", 2)
@@ -63,70 +66,10 @@ class FactoryMachine:
         pretty_value += ("{0:0"+str(self.number_of_lights)+"b}").format(binary_value)
         return pretty_value
 
-    def start_machine(self, indicator_lights, presses, wiring_cache):
-        # try starting the machine by pressing the buttons (defined in the wiring all together)
-        #  until all lights (defined in the indicator targets) are in the correct state
-        #print("Analysing...", indicator_lights, presses, "deep", indicator_cache)
-
-        if presses > self.presses: return
-
-        # if indicator is the same as target, we can finish
-        if indicator_lights == self.indicator_targets:
-            #print(presses, "Presses needed")
-            if self.presses > presses:
-                print("Solution", self.pretty_print(indicator_lights), "found")
-                self.presses = presses
-                print(presses, "Presses needed")
-                return
-            else: return
-
-        # check cache if we've seen this solution already
-        local_wiring_cache = [x for x in wiring_cache]
-        if len(local_wiring_cache) <= 0:
-            #print("All wiring used")
-            return
-
-        #print("Starting from", self.pretty_print(indicator_lights))
-
-        for wiring_index in range(len(local_wiring_cache)):
-            #if (indicator_lights ^ self.indicator_targets) & button_wiring > 1:
-                #print("Button", self.pretty_print(button_wiring), "could be of help for", self.pretty_print(indicator_lights), self.pretty_print(indicator_lights ^ button_wiring))
-                #FactoryMachine.press_buttons(indicator_lights, button_wiring)
-                #future_button_presses = self.start_machine(indicator_lights ^ button_wiring)
-
-            self.start_machine(
-                indicator_lights ^ local_wiring_cache[wiring_index],
-                presses+1,
-                local_wiring_cache[0:wiring_index]+local_wiring_cache[wiring_index+1:]
-            )
-
-                #print("Presses", future_button_presses)
-                #button_presses.append(list(lambda x: x + 1, future_button_presses))
-                #future_button_presses.sort()
-                #future_button_presses[0] += 1
-                #print("button press", future_button_presses[0])
-                #button_presses.append(future_button_presses[0])
-                #map(lambda x: x + 1, button_presses))
-            #else:
-                #print("Skip Button")
-                #continue
-            #FactoryMachine.press_buttons(self.indicator_lights, self.button_wirings[0])
-        #if not button_presses:
-            #print("nothing found")
-            #return
-            #return [99]
-        #else:
-        return
-            #return button_presses
-
-    def start(self):
-        self.start_machine(self.indicator_lights, 0, self.button_wirings)
-        return self.presses
-
     def increase_jolt(self, current_joltage, jolt_presses, wiring_joltage_options):
         if jolt_presses > self.jolt_presses: return
 
-        # check if joltage
+        # check if joltage is already too high
         for jolt_index in range(len(current_joltage)):
             if current_joltage[jolt_index] >= self.joltages[jolt_index]:
                 return
@@ -138,7 +81,7 @@ class FactoryMachine:
 
 
     def jolt(self):
-        self.increase_jolt([0 for i in self.joltages], 0, self.wiring_joltages)
+        #self.increase_jolt([0 for i in self.joltages], 0, self.wiring_joltages)
         return
 
 machines, factory_machines = [], []
@@ -169,3 +112,4 @@ for factory_machine in factory_machines:
     max_presses += max_press
 '''
 print("Solution:", max_presses)
+
