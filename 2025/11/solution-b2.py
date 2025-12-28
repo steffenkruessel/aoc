@@ -183,18 +183,27 @@ class Rack:
                 for newpath in newpaths:
                     paths.append(newpath)
         return paths
+
+device_directory = []
+with open("input.txt", "r") as file:
+    for line in file:
+        device_directory.append(line.strip("\n\r").split(": ")[0])
+    device_directory.append("out")
+    print(device_directory)
+
 # create a "Rack"
 rack = Rack()
 with open("input.txt", "r") as file:
     for line in file:
         # device ID
-        device = [line.strip("\n\r").split(": ")[0]]
+        device_id_str = line.strip("\n\r").split(": ")[0]
+        device = [device_directory.index(device_id_str)]
 
         # connections for this device ID
         connections = line.strip("\n\r").split(": ")[1]
         rack_connections = []
         for connection in connections.split(" "):
-            rack_connections.append(connection)
+            rack_connections.append(device_directory.index(connection))
         device.append(rack_connections)
 
         print("Device", device[0], "connected to", device[1])
@@ -204,12 +213,38 @@ with open("input.txt", "r") as file:
 print("Given", rack.connection_count, "connections...")
 print(rack.graph)
 
-number_of_paths = 0
+number_of_paths = 1
 # fft is always first
 # dac to out (5034 solutions)
-solutions = rack.find_all_paths("svr", "out")
+solutions_dac_out = rack.find_all_paths(device_directory.index("dac"), device_directory.index("out"))
+number_of_paths *= len(solutions_dac_out)
+print("DAC to OUT", len(solutions_dac_out))
+for solution in solutions_dac_out:
+    for path_index in range(len(solution)-1):
+        if solution[path_index+1] in rack.graph[solution[path_index]]:
+            rack.graph[solution[path_index]].remove(solution[path_index+1])
+print(len(rack.get_all_connections()))
 
-for solution in solutions:
-    if ("dac" in solution) & ("fft" in solution):
-        number_of_paths += 1
+solutions_fft_dac = rack.find_all_paths(device_directory.index("fft"), device_directory.index("dac"))
+number_of_paths *= len(solutions_fft_dac)
+print("FFT to DAC", len(solutions_fft_dac))
+for solution in solutions_fft_dac:
+    for path_index in range(len(solution)-1):
+        if solution[path_index+1] in rack.graph[solution[path_index]]:
+            rack.graph[solution[path_index]].remove(solution[path_index+1])
+print(len(rack.get_all_connections()))
+
+solutions_svr_fft = rack.find_all_paths(device_directory.index("svr"), device_directory.index("fft"))
+number_of_paths *= len(solutions_svr_fft)
+print("SVR to FFT", len(solutions_svr_fft))
+for solution in solutions_svr_fft:
+    for path_index in range(len(solution)-1):
+        if solution[path_index+1] in rack.graph[solution[path_index]]:
+            rack.graph[solution[path_index]].remove(solution[path_index+1])
+print(len(rack.get_all_connections()))
+#solutions = rack.find_all_paths(device_directory.index("svr"), device_directory.index("out"))
+
+#for solution in solutions:
+#    if (device_directory.index("fft") in solution):
+#        number_of_paths += 1
 print("Solution:", number_of_paths)
